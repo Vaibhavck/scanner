@@ -149,7 +149,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                     bottomRight: Radius.circular(25),
                   ),
                 ),
-                child: Column(
+                child: ListView(
                   children: <Widget>[
                     Container(
                       child: DrawerHeader(
