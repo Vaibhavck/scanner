@@ -3,15 +3,15 @@ import 'package:i_scanner/screens/home/shared/loading.dart';
 import 'package:i_scanner/services/auth.dart';
 import 'package:i_scanner/screens/home/shared/constants.dart';
 
-class SignIn extends StatefulWidget {
+class Register extends StatefulWidget {
   final Function toggleView;
-  SignIn({this.toggleView});
+  Register({this.toggleView});
 
   @override
-  _SignInState createState() => _SignInState();
+  _RegisterState createState() => _RegisterState();
 }
 
-class _SignInState extends State<SignIn> {
+class _RegisterState extends State<Register> {
   final AuthService _auth = AuthService();
   final _formKey = GlobalKey<FormState>();
   bool loading = false;
@@ -30,28 +30,15 @@ class _SignInState extends State<SignIn> {
             appBar: AppBar(
               backgroundColor: Colors.redAccent,
               elevation: 0.0,
-              title: Text('Sign in'),
+              title: Text('Sign up to IScanner'),
               actions: <Widget>[
                 FlatButton.icon(
                   icon: Icon(Icons.person),
-                  label: Text('Register'),
+                  label: Text('Sign in'),
                   onPressed: () {
                     widget.toggleView();
                   },
-                ),
-                FlatButton.icon(
-                  icon: Icon(Icons.arrow_forward),
-                  label: Text('Sign in anon'),
-                  onPressed: () async {
-                    dynamic result = await _auth.signInAnon();
-                    if (result == null) {
-                      print('error signing in');
-                    } else {
-                      print('sign in successful');
-                      print(result.uid);
-                    }
-                  },
-                ),
+                )
               ],
             ),
             body: Container(
@@ -84,7 +71,7 @@ class _SignInState extends State<SignIn> {
                       RaisedButton(
                         color: Colors.red[300],
                         child: Text(
-                          'Sign in',
+                          'Register',
                           style: TextStyle(
                             color: Colors.white,
                           ),
@@ -93,7 +80,7 @@ class _SignInState extends State<SignIn> {
                           if (_formKey.currentState.validate()) {
                             setState(() => loading = true);
                             dynamic result = await _auth
-                                .signInWithEmailAndPassword(email, password);
+                                .registerWithEmailAndPassword(email, password);
                             if (result == null) {
                               setState(() {
                                 error = 'Invalid credentials';
