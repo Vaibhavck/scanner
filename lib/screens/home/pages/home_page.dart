@@ -134,8 +134,14 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
           elevation: 0.0,
           actions: <Widget>[
             FlatButton.icon(
-              icon: Icon(Icons.person),
-              label: Text('logout'),
+              icon: Icon(
+                Icons.person,
+                color: Colors.red,
+              ),
+              label: Text(
+                'Logout',
+                style: TextStyle(color: Colors.red),
+              ),
               onPressed: () async {
                 await _auth.signOut();
               },
