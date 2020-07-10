@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:i_scanner/pages/document.dart';
+import 'package:i_scanner/screens/home/pages/document.dart';
 
 // this page is displayed when user clicks on the added documents
 class ScannerPage extends StatefulWidget {
