@@ -3,34 +3,6 @@ import 'package:i_scanner/screens/home/shared/loading.dart';
 import 'package:i_scanner/services/auth.dart';
 import 'package:i_scanner/screens/home/shared/constants.dart';
 
-class BottomButton extends StatelessWidget {
-  final AuthService _auth = AuthService();
-
-  @override
-  Widget build(BuildContext context) {
-    return Align(
-      alignment: Alignment.bottomCenter,
-      child: FlatButton.icon(
-        onPressed: () async {
-          dynamic result = await _auth.signInAnon();
-          if (result == null) {
-            print('error signing in');
-          } else {
-            print('sign in successful');
-            print(result.uid);
-          }
-        },
-        icon: Icon(
-          Icons.arrow_forward,
-          color: Colors.red,
-        ),
-        label: Text('Skip sign-in',
-            style: TextStyle(fontSize: 15, color: Colors.redAccent)),
-      ),
-    );
-  }
-}
-
 class SignIn extends StatefulWidget {
   final Function toggleView;
   SignIn({this.toggleView});
@@ -123,7 +95,30 @@ class _SignInState extends State<SignIn> {
                       error,
                       style: TextStyle(color: Colors.red, fontSize: 14.0),
                     ),
-                    Expanded(child: BottomButton()),
+                    Expanded(
+                        child: Align(
+                      alignment: Alignment.bottomCenter,
+                      child: FlatButton.icon(
+                        onPressed: () async {
+                          setState(() => loading = true);
+                          dynamic result = await _auth.signInAnon();
+                          if (result == null) {
+                            print('error signing in');
+                            setState(() => loading = true);
+                          } else {
+                            print('sign in successful');
+                            print(result.uid);
+                          }
+                        },
+                        icon: Icon(
+                          Icons.arrow_forward,
+                          color: Colors.red,
+                        ),
+                        label: Text('Skip sign-in',
+                            style: TextStyle(
+                                fontSize: 15, color: Colors.redAccent)),
+                      ),
+                    )),
                   ],
                 ),
               ),
