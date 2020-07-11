@@ -23,29 +23,18 @@ class _ScannerPageState extends State<ScannerPage> {
         ),
         body: Center(
           child: Container(
-            padding: EdgeInsets.all(8.0),
-            child: Column(
-              children: <Widget>[
-                Container(
-                  height: 400,
-                  width: 400,
-                  padding: EdgeInsets.all(10.0),
-                  child: widget.doc.image,
-                ),
-                Container(
-                    padding: EdgeInsets.all(5.9),
-                    child: Text(
-                      '${widget.doc.title}',
-                      style: TextStyle(color: Colors.white),
-                    )),
-                Container(
-                  padding: EdgeInsets.all(5.9),
-                  child: Text(
-                    '${widget.doc.dateAdded}',
-                    style: TextStyle(color: Colors.white),
+            child: GridView.count(
+              // Create a grid with 2 columns. If you change the scrollDirection to
+              // horizontal, this produces 2 rows.
+              crossAxisCount: 3,
+              // Generate 100 widgets that display their index in the List.
+              children: List.generate(widget.doc.images.length, (index) {
+                return Center(
+                  child: Container(
+                    child: Image.file(widget.doc.images[index]),
                   ),
-                ),
-              ],
+                );
+              }),
             ),
           ),
         ),

@@ -2,10 +2,12 @@ import 'dart:io';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:i_scanner/services/auth.dart';
-import 'package:image_picker/image_picker.dart';
+// import 'package:image_picker/image_picker.dart';
 import 'package:i_scanner/screens/home/extras/nothing_here.dart';
 import 'package:i_scanner/screens/home/extras/doc_card.dart';
 import 'package:i_scanner/screens/home/extras/switch.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:multi_image_picker/multi_image_picker.dart';
 
 // scanner app
 class IScanner extends StatefulWidget {
@@ -50,31 +52,82 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   bool darkMode = false;
 
   // list of all documents (images)
-  List<Image> docs = List<Image>();
+  List<List<File>> _docs = List<List<File>>();
 
   // image picker for picking images from gallery or camera
-  ImagePicker _imagePicker = ImagePicker();
+  // ImagePicker _imagePicker = ImagePicker();
 
   // method for getting images from camera
-  Future _getImageFromCamera() async {
-    PickedFile image = await _imagePicker.getImage(source: ImageSource.camera);
-    File file = File(image.path);
-    setState(() {
-      this.docs.add(Image.file(file));
-      print("current items : ${this.docs.length}");
-    });
-  }
+  // Future _getImageFromCamera() async {
+  //   PickedFile image = await _imagePicker.getImage(source: ImageSource.camera);
+  //   File file = File(image.path);
+  //   setState(() {
+  //     this.docs.add(Image.file(file));
+  //     print("current items : ${this.docs.length}");
+  //   });
+  // }
 
   // object of AuthService
   final AuthService _auth = AuthService();
 
   // method for getting images from gallery
-  Future _getImageFromGallery() async {
-    PickedFile image = await _imagePicker.getImage(source: ImageSource.gallery);
-    File file = File(image.path);
+  // Future _getImageFromGallery() async {
+  //   PickedFile image = await _imagePicker.getImage(source: ImageSource.gallery);
+  //   File file = File(image.path);
+  //   setState(() {
+  //     this._docs.add(Image.file(file));
+  //     print("current items : ${this._docs.length}");
+  //   });
+  // }
+
+  // test method
+  List<File> _files;
+  List<Asset> cameraPickedImages = List<Asset>();
+  String _error = 'No Error Dectected';
+  Future test() async {
+    List<File> files = await FilePicker.getMultiFile(
+      type: FileType.custom,
+      allowedExtensions: ['jpg', 'pdf', 'doc'],
+    );
+    if (files == null) {
+      print("No image selected");
+    } else {
+      _files = files;
+      this._docs.add(_files);
+    }
+  }
+
+  Future<void> loadAssets() async {
+    List<Asset> resultList = List<Asset>();
+    String error = 'No Error Dectected';
+
+    try {
+      resultList = await MultiImagePicker.pickImages(
+        maxImages: 300,
+        enableCamera: true,
+        selectedAssets: cameraPickedImages,
+        cupertinoOptions: CupertinoOptions(takePhotoIcon: "chat"),
+        materialOptions: MaterialOptions(
+          actionBarColor: "#abcdef",
+          actionBarTitle: "Example App",
+          allViewTitle: "All Photos",
+          useDetailsView: false,
+          selectCircleStrokeColor: "#000000",
+        ),
+      );
+    } on Exception catch (e) {
+      error = e.toString();
+      print(error);
+    }
+
+    // If the widget was removed from the tree while the asynchronous platform
+    // message was in flight, we want to discard the reply rather than calling
+    // setState to update our non-existent appearance.
+    if (!mounted) return;
+
     setState(() {
-      this.docs.add(Image.file(file));
-      print("current items : ${this.docs.length}");
+      cameraPickedImages = resultList;
+      print(_error);
     });
   }
 
@@ -116,8 +169,15 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     Size size = MediaQuery.of(context).size;
 
     // checking if docs are present or not
-    if (this.docs != null) {
-      print("current number of docs is ${this.docs.length}");
+    // if (this.docs != null) {
+    //   print("current number of docs is ${this.docs.length}");
+    // } else {
+    //   print("current number of docs is 0");
+    // }
+
+    // test method
+    if (this._docs != null) {
+      print("current number of docs is ${this._docs.length}");
     } else {
       print("current number of docs is 0");
     }
@@ -240,17 +300,17 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
           child: Stack(
             children: <Widget>[
               Center(
-                child: this.docs.isEmpty
+                child: this._docs.isEmpty
                     ? NothingHerePage()
                     : ListView.builder(
-                        itemCount: this.docs == null ? 0 : this.docs.length,
+                        itemCount: this._docs == null ? 0 : this._docs.length,
                         itemBuilder: (context, index) {
                           return DocCard(
                             mode: this.darkMode,
                             index: index,
                             title: 'Undefined${index + 1}',
-                            image: this.docs[index] != null
-                                ? this.docs[index]
+                            images: this._docs[index][0] != null
+                                ? this._docs[index]
                                 : Image.asset('assets/images/sample.jpg'),
                             dateAdded: '12/12/12',
                           );
@@ -287,7 +347,8 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                                   this.darkMode ? Colors.black : Colors.white,
                             ),
                             onClick: () {
-                              this._getImageFromCamera();
+                              // this._getImageFromCamera();
+                              this.loadAssets();
                               animationController.reverse();
                             },
                           ),
@@ -311,7 +372,8 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                                   this.darkMode ? Colors.black : Colors.white,
                             ),
                             onClick: () {
-                              this._getImageFromGallery();
+                              // this._getImageFromGallery();
+                              this.test();
                               animationController.reverse();
                             },
                           ),

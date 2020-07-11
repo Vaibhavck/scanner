@@ -2,17 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:i_scanner/screens/home/pages/scanner_page.dart';
 import 'package:i_scanner/screens/home/pages/document.dart';
+import 'dart:io';
 
 // card for displaying current added documents (images)
 class DocCard extends StatefulWidget {
   // properties
   final String title;
   final String dateAdded;
-  final Image image;
+  final List<File> images;
   final int index;
   final bool mode; // checking if dark mode is on or not
 
-  DocCard({this.mode, this.index, this.title, this.dateAdded, this.image});
+  DocCard({this.mode, this.index, this.title, this.dateAdded, this.images});
 
   @override
   _DocCardState createState() => _DocCardState(this.mode);
@@ -55,7 +56,7 @@ class _DocCardState extends State<DocCard> {
                       doc: Doc(
                         title: this.widget.title,
                         dateAdded: this.widget.dateAdded,
-                        image: this.widget.image,
+                        images: this.widget.images,
                       ),
                       mode: true,
                     ),
@@ -89,7 +90,7 @@ class _DocCardState extends State<DocCard> {
                           doc: Doc(
                             title: this.widget.title,
                             dateAdded: this.widget.dateAdded,
-                            image: this.widget.image,
+                            images: this.widget.images,
                           ),
                           mode: false,
                         )),
@@ -98,7 +99,7 @@ class _DocCardState extends State<DocCard> {
             splashColor: Colors.grey,
             child: ListTile(
               leading: Container(
-                child: this.widget.image,
+                child: Image.file(this.widget.images[0]),
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.black),
                 ),
