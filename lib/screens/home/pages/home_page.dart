@@ -1,16 +1,21 @@
 import 'dart:io';
 import 'dart:ui';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:i_scanner/models/user.dart';
 import 'package:i_scanner/services/auth.dart';
 // import 'package:image_picker/image_picker.dart';
 import 'package:i_scanner/screens/home/extras/nothing_here.dart';
 import 'package:i_scanner/screens/home/extras/doc_card.dart';
 import 'package:i_scanner/screens/home/extras/switch.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:i_scanner/services/database.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
 
 // scanner app
 class IScanner extends StatefulWidget {
+  final User user;
+  IScanner({this.user});
   @override
   _IScannerState createState() => _IScannerState();
 }
@@ -23,13 +28,15 @@ class _IScannerState extends State<IScanner> {
       // theme: AppTheme.lightTheme,
       // theme: AppTheme.darkTheme,
       // theme: ThemeData.dark(),
-      home: Home(), // calling home page
+      home: Home(user: widget.user), // calling home page
     );
   }
 }
 
 // home page for the app
 class Home extends StatefulWidget {
+  final User user;
+  Home({this.user});
   @override
   _HomeState createState() => _HomeState();
 }
@@ -42,6 +49,9 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
       degThreeTranslationAnimation;
   Animation rotationAnimation;
 
+  // auth
+  FirebaseAuth auth;
+
   // method for animating floating buttons
   double getRadiansFromDegree(double degree) {
     double unitRadian = 57.295779513;
@@ -53,7 +63,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
 
   // list of all documents (images)
   List<List<File>> _docs = List<List<File>>();
-
+  List<DocCollection> collection;
   // image picker for picking images from gallery or camera
   // ImagePicker _imagePicker = ImagePicker();
 
@@ -84,7 +94,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   List<File> _files;
   List<Asset> cameraPickedImages = List<Asset>();
   String _error = 'No Error Dectected';
-  Future test() async {
+  Future getfilesFromGallery() async {
     List<File> files = await FilePicker.getMultiFile(
       type: FileType.custom,
       allowedExtensions: ['jpg', 'pdf', 'doc'],
@@ -94,6 +104,13 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     } else {
       _files = files;
       this._docs.add(_files);
+      collection.add(
+        DocCollection(
+          numRecords: files.length,
+          images: files,
+        ),
+      );
+      await DatabaseService(uid: widget.user.uid).updateUserData(collection);
     }
   }
 
@@ -373,7 +390,8 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                             ),
                             onClick: () {
                               // this._getImageFromGallery();
-                              this.test();
+                              this.getfilesFromGallery();
+                              setState(() {});
                               animationController.reverse();
                             },
                           ),
