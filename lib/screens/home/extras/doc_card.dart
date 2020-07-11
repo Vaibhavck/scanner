@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:i_scanner/screens/home/pages/scanner_page.dart';
 import 'package:i_scanner/screens/home/pages/document.dart';
+import 'package:image_picker/image_picker.dart';
 
 // card for displaying current added documents (images)
 class DocCard extends StatefulWidget {
@@ -11,8 +14,15 @@ class DocCard extends StatefulWidget {
   final Image image;
   final int index;
   final bool mode; // checking if dark mode is on or not
+  final File sampleImg;
 
-  DocCard({this.mode, this.index, this.title, this.dateAdded, this.image});
+  DocCard(
+      {this.mode,
+      this.index,
+      this.title,
+      this.dateAdded,
+      this.image,
+      this.sampleImg});
 
   @override
   _DocCardState createState() => _DocCardState(this.mode);
@@ -53,10 +63,10 @@ class _DocCardState extends State<DocCard> {
                   MaterialPageRoute(
                     builder: (context) => ScannerPage(
                       doc: Doc(
-                        title: this.widget.title,
-                        dateAdded: this.widget.dateAdded,
-                        image: this.widget.image,
-                      ),
+                          title: this.widget.title,
+                          dateAdded: this.widget.dateAdded,
+                          image: this.widget.image,
+                          sampleImg: this.widget.sampleImg),
                       mode: true,
                     ),
                   ),
