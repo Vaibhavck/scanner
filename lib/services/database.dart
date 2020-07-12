@@ -6,10 +6,15 @@ class DatabaseService {
   DatabaseService({this.uid});
 
   //collection reference
-  final CollectionReference ScannedDataCollection =
+  final CollectionReference scannedDataCollection =
       Firestore.instance.collection('ScannedData');
 
-  Future<void> updateUserData(String title) async {
-    return await ScannedDataCollection.document(uid).setData({'Title': title});
+  Future<void> updateUserData(bool mode) async {
+    return await scannedDataCollection.document(uid).setData({'mode': mode});
+  }
+
+  // getting the current mode
+  Stream<QuerySnapshot> get currentMode {
+    return scannedDataCollection.snapshots();
   }
 }

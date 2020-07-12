@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:i_scanner/screens/home/pages/scanner_page.dart';
 import 'package:i_scanner/screens/home/pages/document.dart';
-import 'package:image_picker/image_picker.dart';
+// import 'package:image_picker/image_picker.dart';
 
 // card for displaying current added documents (images)
 class DocCard extends StatefulWidget {
