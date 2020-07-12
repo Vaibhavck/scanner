@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:ui';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:i_scanner/main.dart';
@@ -139,9 +140,19 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   //upload image to firebase
   FirebaseStorage _storage = FirebaseStorage.instance;
 
+  //for getting userId
+  final FirebaseAuth _auth2 = FirebaseAuth.instance;
+  String uid;
+  void inputData() async {
+    final FirebaseUser user = await _auth2.currentUser();
+    uid = user.uid;
+  }
+
   Future uploadPic() async {
+    await inputData();
+    String filePath = '${uid}/${DateTime.now()}.png';
     //Create a reference to the location you want to upload to in firebase
-    StorageReference reference = _storage.ref().child("images/");
+    StorageReference reference = _storage.ref().child(filePath);
 
     //Upload the file to firebase
     StorageUploadTask uploadTask = reference.putFile(sampleImg);
