@@ -1,7 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:i_scanner/screens/home/shared/loading.dart';
 import 'package:i_scanner/services/auth.dart';
 import 'package:i_scanner/screens/home/shared/constants.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class SignIn extends StatefulWidget {
   final Function toggleView;
@@ -20,6 +22,31 @@ class _SignInState extends State<SignIn> {
   String email = "";
   String password = "";
   String error = "";
+
+  //google sign in
+  GoogleSignIn _googleSignIn = new GoogleSignIn();
+  FirebaseAuth _authe = FirebaseAuth.instance;
+  FirebaseUser _user;
+
+  bool isSignIn = false;
+
+  Future<void> handleSignIn() async {
+    GoogleSignInAccount googleSignInAccount = await _googleSignIn.signIn();
+    GoogleSignInAuthentication googleSignInAuthentication =
+        await googleSignInAccount.authentication;
+
+    AuthCredential credential = GoogleAuthProvider.getCredential(
+        idToken: googleSignInAuthentication.idToken,
+        accessToken: googleSignInAuthentication.accessToken);
+
+    AuthResult result = (await _authe.signInWithCredential(credential));
+
+    _user = result.user;
+
+    setState(() {
+      isSignIn = true;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -88,6 +115,19 @@ class _SignInState extends State<SignIn> {
                             });
                           }
                         }
+                      },
+                    ),
+                    SizedBox(height: 12.0),
+                    RaisedButton(
+                      color: Colors.red[300],
+                      child: Text(
+                        'Sign in with Gmail',
+                        style: TextStyle(
+                          color: Colors.white,
+                        ),
+                      ),
+                      onPressed: () async {
+                        handleSignIn();
                       },
                     ),
                     SizedBox(height: 12.0),
