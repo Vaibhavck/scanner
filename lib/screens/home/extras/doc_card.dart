@@ -1,19 +1,28 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:i_scanner/screens/home/pages/scanner_page.dart';
 import 'package:i_scanner/screens/home/pages/document.dart';
-import 'dart:io';
+import 'package:image_picker/image_picker.dart';
 
 // card for displaying current added documents (images)
 class DocCard extends StatefulWidget {
   // properties
   final String title;
   final String dateAdded;
-  final List<File> images;
+  final Image image;
   final int index;
   final bool mode; // checking if dark mode is on or not
+  final File sampleImg;
 
-  DocCard({this.mode, this.index, this.title, this.dateAdded, this.images});
+  DocCard(
+      {this.mode,
+      this.index,
+      this.title,
+      this.dateAdded,
+      this.image,
+      this.sampleImg});
 
   @override
   _DocCardState createState() => _DocCardState(this.mode);
@@ -54,10 +63,10 @@ class _DocCardState extends State<DocCard> {
                   MaterialPageRoute(
                     builder: (context) => ScannerPage(
                       doc: Doc(
-                        title: this.widget.title,
-                        dateAdded: this.widget.dateAdded,
-                        images: this.widget.images,
-                      ),
+                          title: this.widget.title,
+                          dateAdded: this.widget.dateAdded,
+                          image: this.widget.image,
+                          sampleImg: this.widget.sampleImg),
                       mode: true,
                     ),
                   ),
@@ -90,7 +99,7 @@ class _DocCardState extends State<DocCard> {
                           doc: Doc(
                             title: this.widget.title,
                             dateAdded: this.widget.dateAdded,
-                            images: this.widget.images,
+                            image: this.widget.image,
                           ),
                           mode: false,
                         )),
@@ -99,7 +108,7 @@ class _DocCardState extends State<DocCard> {
             splashColor: Colors.grey,
             child: ListTile(
               leading: Container(
-                child: Image.file(this.widget.images[0]),
+                child: this.widget.image,
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.black),
                 ),
