@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "10227005215-p83rkkjhc11uj1kuhsf50vagv17s5nma.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.project.i_scanner",
+            "certificate_hash": "7ff63553bf4e1112f53e34673d8acdd7db5cc43c"
+          }
+        },
+        {
           "client_id": "10227005215-vla1b19j9ur755p7ill7l57qja6enemb.apps.googleusercontent.com",
           "client_type": 3
         }
