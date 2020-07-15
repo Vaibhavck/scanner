@@ -44,12 +44,6 @@ class _ScannerPageState extends State<ScannerPage> {
                         style: TextStyle(color: Colors.black),
                       ),
                     ),
-                    /*RaisedButton(
-                      child: Text('Upload'),
-                      onPressed: () {
-                        uploadPic();
-                      },
-                    ),*/
                   ],
                 ))),
       ),

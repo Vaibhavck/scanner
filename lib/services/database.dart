@@ -6,10 +6,31 @@ class DatabaseService {
   DatabaseService({this.uid});
 
   //collection reference
-  final CollectionReference ScannedDataCollection =
-      Firestore.instance.collection('ScannedData');
+  final CollectionReference isDarkModeEnabled =
+      Firestore.instance.collection('isDarkModeEnabled');
 
-  Future<void> updateUserData(String title) async {
-    return await ScannedDataCollection.document(uid).setData({'Title': title});
+  final CollectionReference numDocCollection =
+      Firestore.instance.collection('numDocCollection');
+
+  final CollectionReference scannedData =
+      Firestore.instance.collection('scannedData');
+
+  Future<void> updateUserData(bool mode, int nDocCollection) async {
+    return await scannedData.document(uid).setData({
+      'darkModeEnabled': mode,
+      'numDocCollection': nDocCollection,
+    });
+  }
+
+  Future<void> updateUserDarkModeChoice(bool mode) async {
+    return await isDarkModeEnabled.document(uid).setData({
+      'darkModeEnabled': mode,
+    });
+  }
+
+  Future<void> updateUserNumDocCollection(int nDocCollection) async {
+    return await numDocCollection.document(uid).setData({
+      'numDocCollection': nDocCollection,
+    });
   }
 }

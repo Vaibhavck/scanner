@@ -28,7 +28,7 @@ class _RegisterState extends State<Register> {
         : Scaffold(
             backgroundColor: Colors.grey[200],
             appBar: AppBar(
-              backgroundColor: Colors.redAccent,
+              backgroundColor: Colors.red,
               elevation: 0.0,
               title: Text('Sign up to IScanner'),
               actions: <Widget>[

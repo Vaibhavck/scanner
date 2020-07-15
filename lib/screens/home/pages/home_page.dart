@@ -1,20 +1,20 @@
 import 'dart:io';
 import 'dart:ui';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:i_scanner/main.dart';
-import 'package:i_scanner/screens/home/extras/view.dart';
+import 'package:flutter_absolute_path/flutter_absolute_path.dart';
 import 'package:i_scanner/services/auth.dart';
+import 'package:i_scanner/services/database.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:i_scanner/screens/home/extras/nothing_here.dart';
-import 'package:i_scanner/screens/home/extras/doc_card.dart';
 import 'package:i_scanner/screens/home/extras/switch.dart';
 import 'dart:async';
 import 'package:multi_image_picker/multi_image_picker.dart';
+import 'package:http/http.dart' as http;
 
 // scanner app
 class IScanner extends StatefulWidget {
+  final String uid;
+  IScanner({this.uid});
   @override
   _IScannerState createState() => _IScannerState();
 }
@@ -27,39 +27,57 @@ class _IScannerState extends State<IScanner> {
       // theme: AppTheme.lightTheme,
       // theme: AppTheme.darkTheme,
       // theme: ThemeData.dark(),
-      home: Home(), // calling home page
+      home: Home(uid: widget.uid), // calling home page
     );
   }
 }
 
 // home page for the app
 class Home extends StatefulWidget {
+  final String uid;
+  Home({this.uid});
   @override
-  _HomeState createState() => _HomeState();
+  _HomeState createState() => _HomeState(uid: this.uid);
 }
 
 class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
-  //multi img picker
-  List<Asset> images = List<Asset>();
+  //params
+  List<File> images = List<File>();
+  List<Asset> assets = List<Asset>();
   String _error = 'No Error Dectected';
-  File sampleImg;
+  Image sampleImg;
+  final String uid;
+  _HomeState({this.uid});
 
-  //Multi image picker
-  Widget buildGridView() {
-    return GridView.count(
-      crossAxisCount: 3,
-      children: List.generate(images.length, (index) {
-        Asset asset = images[index];
-        return AssetThumb(
-          asset: asset,
-          width: 300,
-          height: 300,
-        );
-      }),
-    );
+  // this should be initialized by the number of docCollections current present in firebase
+  int numDocCollection;
+
+  Future uploadImages(int docCollectionIdx, List<File> images) async {
+    String docCollectionName = 'undefined$docCollectionIdx-${DateTime.now()}';
+    for (int i = 0; i < images.length; i++) {
+      String filePath = '$uid/$docCollectionName/${i + 1}/original.png';
+      //Create a reference to the location you want to upload to in firebase
+      StorageReference reference = _storage.ref().child(filePath);
+      StorageUploadTask uploadTask = reference.putFile(images[i]);
+      print(uploadTask);
+    }
+    for (int i = 0; i < images.length; i++) {
+      String filePath = '$uid/$docCollectionName/${i + 1}/original.png';
+      StorageReference reference = _storage.ref().child(filePath);
+      //Create a reference to the location you want to upload to in firebase
+      StorageUploadTask uploadTask = reference.putFile(images[i]);
+      print(uploadTask);
+      // String downloadUrl = (await (await uploadTask.onComplete).ref.getDownloadURL()).toString();
+      String url =
+          'https://aksv-scanner.herokuapp.com/download?firebasepath=$filePath';
+      http.Response response = await http.get(url);
+      print(response);
+    }
   }
 
+  // for selecting images from gallery
   Future<void> loadAssets() async {
+    this.assets = null;
     List<Asset> resultList = List<Asset>();
     String error = 'No Error Dectected';
 
@@ -67,10 +85,9 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
       resultList = await MultiImagePicker.pickImages(
         maxImages: 300,
         enableCamera: true,
-        selectedAssets: images,
         materialOptions: MaterialOptions(
-          actionBarColor: "#abcdef",
-          actionBarTitle: "Example App",
+          actionBarColor: "#FF0000",
+          actionBarTitle: "Select Images",
           allViewTitle: "All Photos",
           useDetailsView: false,
           selectCircleStrokeColor: "#000000",
@@ -80,15 +97,33 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
       error = e.toString();
     }
 
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
+    List<File> fileImageArray = [];
+    resultList.forEach(
+      (imageAsset) async {
+        final filePath =
+            await FlutterAbsolutePath.getAbsolutePath(imageAsset.identifier);
+        File tempFile = File(filePath);
+        if (tempFile.existsSync()) {
+          fileImageArray.add(tempFile);
+        }
+      },
+    );
     if (!mounted) return;
 
     setState(() {
-      images = resultList;
+      images = fileImageArray;
+      assets = resultList;
+      if (this.numDocCollection == null) {
+        this.numDocCollection = 1;
+      } else {
+        this.numDocCollection++;
+      }
       _error = error;
+      print(_error);
     });
+    await DatabaseService(uid: this.uid)
+        .updateUserData(this.darkMode, numDocCollection);
+    await this.uploadImages(this.numDocCollection, images);
   }
 
   // for animation stuff
@@ -126,43 +161,8 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   // object of AuthService
   final AuthService _auth = AuthService();
 
-  // method for getting images from gallery
-  Future _getImageFromGallery() async {
-    PickedFile image = await _imagePicker.getImage(source: ImageSource.gallery);
-    File file = File(image.path);
-    setState(() {
-      this.docs.add(Image.file(file));
-      print("current items : ${this.docs.length}");
-      sampleImg = file;
-    });
-  }
-
   //upload image to firebase
   FirebaseStorage _storage = FirebaseStorage.instance;
-
-  //for getting userId
-  final FirebaseAuth _auth2 = FirebaseAuth.instance;
-  String uid;
-  void inputData() async {
-    final FirebaseUser user = await _auth2.currentUser();
-    uid = user.uid;
-  }
-
-  Future uploadPic() async {
-    await inputData();
-    String filePath = '${uid}/${DateTime.now()}.png';
-    //Create a reference to the location you want to upload to in firebase
-    StorageReference reference = _storage.ref().child(filePath);
-
-    //Upload the file to firebase
-    StorageUploadTask uploadTask = reference.putFile(sampleImg);
-
-    /*// Waits till the file is uploaded then stores the download url
-    Uri location = (await uploadTask.future).downloadUrl;
-
-    //returns the download url
-    return location;*/
-  }
 
   // animations
   @override
@@ -199,21 +199,16 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   // build method
   @override
   Widget build(BuildContext context) {
+    setState(() {});
+
     // for current size of the screen
     Size size = MediaQuery.of(context).size;
-
-    // checking if docs are present or not
-    if (this.docs != null) {
-      print("current number of docs is ${this.docs.length}");
-    } else {
-      print("current number of docs is 0");
-    }
 
     // home page widget
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Title goes here...',
+          'I scanner',
           style: TextStyle(color: Colors.red),
         ),
         iconTheme: IconThemeData(color: Colors.red),
@@ -272,6 +267,11 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                       onChanged: (bool val) {
                         setState(() {
                           this.darkMode = val;
+                          DatabaseService(uid: this.uid).updateUserData(
+                              val,
+                              this.numDocCollection == null
+                                  ? 0
+                                  : this.numDocCollection);
                         });
                       },
                     ),
@@ -320,49 +320,14 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
           ),
         ),
       ),
-      body:
-          /*Column(
-        children: <Widget>[
-          Center(child: Text('Error: $_error')),
-          RaisedButton(
-            child: Text("Pick images"),
-            onPressed: loadAssets,
-          ),
-          Expanded(
-            child: buildGridView(),
-          ),
-        ],
-      ),*/
-
-          Container(
+      body: Container(
         color: this.darkMode ? Colors.black : Colors.white,
         width: size.width,
         height: size.height,
         child: Stack(
           children: <Widget>[
             Center(
-              child: this.docs.isEmpty
-                  ? NothingHerePage()
-                  : ListView.builder(
-                      itemCount: this.docs == null ? 0 : this.docs.length,
-                      itemBuilder: (context, index) {
-                        return DocCard(
-                            mode: this.darkMode,
-                            index: index,
-                            title: 'Undefined${index + 1}',
-                            image: this.docs[index] != null
-                                ? this.docs[index]
-                                : Image.asset('assets/images/sample.jpg'),
-                            dateAdded: '12/12/12',
-                            sampleImg: sampleImg);
-                      },
-                    ),
-            ),
-            RaisedButton(
-              child: Text('Upload'),
-              onPressed: () {
-                uploadPic();
-              },
+              child: sampleImg,
             ),
             Positioned(
                 right: 30,
@@ -416,7 +381,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                             color: this.darkMode ? Colors.black : Colors.white,
                           ),
                           onClick: () {
-                            this._getImageFromGallery();
+                            this.loadAssets();
                             animationController.reverse();
                           },
                         ),

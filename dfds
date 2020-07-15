@@ -1,0 +1,74 @@
+[33mcommit 4fad5cab09737a6becf98a27b9bb1e8a81135147[m[33m ([m[1;36mHEAD -> [m[1;32mbeta[m[33m, [m[1;31morigin/beta[m[33m)[m
+Author: adz-313 <ads73818@gmail.com>
+Date:   Sun Jul 12 10:41:44 2020 +0530
+
+    Updated upload functionality
+
+[33mcommit 7052fafe721f9eceac77cfaa89e2b8dbbd5f96b2[m
+Author: adz-313 <ads73818@gmail.com>
+Date:   Sat Jul 11 18:16:24 2020 +0530
+
+    Upload fuctionality added
+
+[33mcommit 446e11a5b4d1c2649f69587e9c5f9d9c15d126d0[m
+Author: adz-313 <ads73818@gmail.com>
+Date:   Fri Jul 10 20:03:21 2020 +0530
+
+    Updated logout button
+
+[33mcommit 65d6da8c6378c4d2f900f185704f8bffe0856398[m
+Author: adz-313 <ads73818@gmail.com>
+Date:   Fri Jul 10 19:56:50 2020 +0530
+
+    Updated flat bottom button
+
+[33mcommit 3a9590b56a992af3027a33172bf9b5e2347de324[m
+Author: adz-313 <ads73818@gmail.com>
+Date:   Fri Jul 10 19:25:17 2020 +0530
+
+    Added flat bottom button
+
+[33mcommit cac2be9ca94d3e80f3f6c92fcb18635117aaaf41[m
+Author: adz-313 <ads73818@gmail.com>
+Date:   Fri Jul 10 18:54:33 2020 +0530
+
+    Added sign in/ register with email and password functionality
+
+[33mcommit 523d9a9fcd851f12a82dfea9cb2c48de85c73ebf[m
+Author: adz-313 <ads73818@gmail.com>
+Date:   Fri Jul 10 15:45:22 2020 +0530
+
+    Added anonymous sign in functionality
+
+[33mcommit ab54fc98999eb78d5286cbf58da04fc3eac6cf9d[m
+Author: adz-313 <ads73818@gmail.com>
+Date:   Fri Jul 10 07:54:35 2020 +0530
+
+    Testing branch
+
+[33mcommit e30351a62b15e3b638ada26f0f89020bd63f8430[m[33m ([m[1;31morigin/master[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Merge: 157e0ee 509d3c0
+Author: Vaibhavck <47863940+Vaibhavck@users.noreply.github.com>
+Date:   Thu Jul 9 20:18:20 2020 +0530
+
+    Merge pull request #1 from Vaibhavck/scanning
+    
+    Scanning
+
+[33mcommit 509d3c057170358e0565809d7f8a5af76c916973[m[33m ([m[1;31morigin/scanning[m[33m)[m
+Author: Vaibhav Kanade <eparis@atlassian.com>
+Date:   Thu Jul 9 20:09:15 2020 +0530
+
+    added firebase admin sdk and other functionalities
+
+[33mcommit b4f51d23b15f9d30c59812d35f0ebea800f5dafc[m
+Author: Vaibhav Kanade <eparis@atlassian.com>
+Date:   Thu Jul 9 12:57:04 2020 +0530
+
+    fixed drawer orientation issue
+
+[33mcommit 157e0ee0768be71388b3464b364294d7ad0af630[m
+Author: Vaibhav Kanade <eparis@atlassian.com>
+Date:   Thu Jul 9 12:30:18 2020 +0530
+
+    basic layout created

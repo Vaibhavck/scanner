@@ -28,7 +28,7 @@ class _SignInState extends State<SignIn> {
         : Scaffold(
             backgroundColor: Colors.grey[200],
             appBar: AppBar(
-              backgroundColor: Colors.redAccent,
+              backgroundColor: Colors.red,
               elevation: 0.0,
               title: Text('Sign in to IScanner'),
               actions: <Widget>[
