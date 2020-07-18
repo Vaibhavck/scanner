@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:i_scanner/screens/authentication/resetPassword.dart';
 import 'package:i_scanner/screens/home/shared/loading.dart';
 import 'package:i_scanner/services/auth.dart';
 import 'package:i_scanner/screens/home/shared/constants.dart';
@@ -45,7 +46,7 @@ class _SignInState extends State<SignIn> {
               padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 50.0),
               child: Form(
                 key: _formKey,
-                child: Column(
+                child: ListView(
                   children: <Widget>[
                     SizedBox(height: 20.0),
                     TextFormField(
@@ -67,7 +68,25 @@ class _SignInState extends State<SignIn> {
                         onChanged: (val) {
                           setState(() => password = val);
                         }),
-                    SizedBox(height: 20.0),
+                    SizedBox(height: 10.0),
+                    FlatButton(
+                      color: Colors.grey[200],
+                      child: Text(
+                        'Forget Password',
+                        style: TextStyle(
+                          color: Colors.red[500],
+                        ),
+                      ),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ResetPassword(),
+                          ),
+                        );
+                      },
+                    ),
+                    SizedBox(height: 10.0),
                     RaisedButton(
                       color: Colors.red[300],
                       child: Text(

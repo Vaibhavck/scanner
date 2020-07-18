@@ -3,6 +3,8 @@ import 'dart:ui';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_absolute_path/flutter_absolute_path.dart';
+import 'package:i_scanner/screens/home/pages/document.dart';
+import 'package:i_scanner/screens/home/pages/scanner_page.dart';
 import 'package:i_scanner/services/auth.dart';
 import 'package:i_scanner/services/database.dart';
 import 'package:image_picker/image_picker.dart';
@@ -164,6 +166,38 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   //upload image to firebase
   FirebaseStorage _storage = FirebaseStorage.instance;
 
+  // list item
+  Widget listItem(int index) {
+    return ListTile(
+        contentPadding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+        leading: Container(
+          padding: EdgeInsets.only(right: 12.0),
+          decoration: new BoxDecoration(
+              border: new Border(
+                  right: new BorderSide(
+                      width: 1.0,
+                      color: this.darkMode ? Colors.white24 : Colors.black))),
+          child: Icon(Icons.cloud_upload,
+              color: this.darkMode ? Colors.white : Colors.black),
+        ),
+        title: Text(
+          "Undefined${index + 1}",
+          style: TextStyle(
+              color: this.darkMode ? Colors.white : Colors.black,
+              fontWeight: FontWeight.bold),
+        ),
+        // subtitle: Text("Intermediate", style: TextStyle(color: Colors.white)),
+
+        subtitle: Row(
+          children: <Widget>[
+            Icon(Icons.date_range, color: Colors.red),
+            Text(" Intermediate", style: TextStyle(color: Colors.white))
+          ],
+        ),
+        trailing: Icon(Icons.edit,
+            color: this.darkMode ? Colors.white : Colors.black, size: 30.0));
+  }
+
   // animations
   @override
   void initState() {
@@ -280,6 +314,35 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                     color: this.darkMode ? Colors.grey[900] : Colors.white,
                     child: InkWell(
                       onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ScannerPage(
+                              doc: Doc(),
+                              mode: true,
+                            ),
+                          ),
+                        );
+                        print("ocr");
+                      },
+                      splashColor: Colors.red,
+                      child: ListTile(
+                        leading: Icon(
+                          Icons.camera,
+                          color: Colors.red,
+                          size: 30,
+                        ),
+                        title: Text(
+                          'OCR',
+                          style: TextStyle(color: Colors.red, fontSize: 24),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Material(
+                    color: this.darkMode ? Colors.grey[900] : Colors.white,
+                    child: InkWell(
+                      onTap: () {
                         print("help");
                       },
                       splashColor: Colors.red,
@@ -326,8 +389,13 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
         height: size.height,
         child: Stack(
           children: <Widget>[
-            Center(
-              child: sampleImg,
+            Container(
+              child: ListView.builder(
+                itemCount: 10,
+                itemBuilder: (context, index) {
+                  return this.listItem(index);
+                },
+              ),
             ),
             Positioned(
                 right: 30,

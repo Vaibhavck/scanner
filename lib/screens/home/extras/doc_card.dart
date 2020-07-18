@@ -9,7 +9,7 @@ class DocCard extends StatefulWidget {
   // properties
   final String title;
   final String dateAdded;
-  final Image image;
+  final File image;
   final int index;
   final bool mode; // checking if dark mode is on or not
   final File sampleImg;
@@ -63,7 +63,7 @@ class _DocCardState extends State<DocCard> {
                       doc: Doc(
                           title: this.widget.title,
                           dateAdded: this.widget.dateAdded,
-                          image: this.widget.image,
+                          files: this.widget.image,
                           sampleImg: this.widget.sampleImg),
                       mode: true,
                     ),
@@ -97,7 +97,7 @@ class _DocCardState extends State<DocCard> {
                           doc: Doc(
                             title: this.widget.title,
                             dateAdded: this.widget.dateAdded,
-                            image: this.widget.image,
+                            files: this.widget.image,
                           ),
                           mode: false,
                         )),
@@ -106,7 +106,7 @@ class _DocCardState extends State<DocCard> {
             splashColor: Colors.grey,
             child: ListTile(
               leading: Container(
-                child: this.widget.image,
+                child: Image.file(this.widget.image),
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.black),
                 ),

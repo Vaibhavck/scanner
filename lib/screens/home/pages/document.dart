@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 class Doc {
   final String title;
   final String dateAdded;
-  final Image image;
+  final File files;
   final File sampleImg;
 
-  Doc({this.title, this.dateAdded, this.image, this.sampleImg});
+  Doc({this.title, this.dateAdded, this.files, this.sampleImg});
 }
