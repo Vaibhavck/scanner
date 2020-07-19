@@ -40,6 +40,7 @@ dependencies:
   flutter_absolute_path: ^1.0.6
   flutter_cache_manager: ^1.4.1
   image_cropper: ^1.2.3
+  shared_preferences: ^0.5.8
   firebase_ml_vision: ^0.9.4
   opencv: ^1.0.2
   http:

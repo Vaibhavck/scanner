@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_absolute_path/flutter_absolute_path.dart';
 import 'package:i_scanner/screens/home/pages/document.dart';
 import 'package:i_scanner/screens/home/pages/scanner_page.dart';
+import 'package:i_scanner/screens/home/shared/utility.dart';
 import 'package:i_scanner/services/auth.dart';
 import 'package:i_scanner/services/database.dart';
 import 'package:image_picker/image_picker.dart';
@@ -46,8 +47,11 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   //params
   List<File> images = List<File>();
   List<Asset> assets = List<Asset>();
+  Image imageFromPreferences;
   String _error = 'No Error Dectected';
   Image sampleImg;
+  String key;
+  Widget widgetToShow;
   final String uid;
   _HomeState({this.uid});
 
@@ -75,6 +79,47 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
       http.Response response = await http.get(url);
       print(response);
     }
+  }
+
+  // load image
+  loadImageFromPreferences() {
+    Utility.getImageFromPreferences(this.key).then((img) {
+      if (img == null) {
+        return;
+      }
+      setState(() {
+        this.imageFromPreferences = Utility.imageFromBase64String(img);
+      });
+    });
+  }
+
+  // image saved
+  Widget imageFromGallery(Future<File> imageFile, String key) {
+    return FutureBuilder<File>(
+      future: imageFile,
+      builder: (BuildContext context, AsyncSnapshot<File> snapshot) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          if (snapshot.data == null) {
+            return const Text('Error', textAlign: TextAlign.center);
+          }
+          Utility.saveImageToPreferences(
+            Utility.base64String(snapshot.data.readAsBytesSync()),
+            key,
+          );
+          return Image.file(snapshot.data);
+        }
+        if (snapshot.error != null) {
+          return const Text(
+            'Error picking images',
+            textAlign: TextAlign.center,
+          );
+        }
+        return const Text(
+          'No image selected',
+          textAlign: TextAlign.center,
+        );
+      },
+    );
   }
 
   // for selecting images from gallery
@@ -107,6 +152,11 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
         File tempFile = File(filePath);
         if (tempFile.existsSync()) {
           fileImageArray.add(tempFile);
+          String key = '${uid}_$numDocCollection';
+          setState(() {
+            this.key = key;
+          });
+          this.imageFromGallery(Future.value(tempFile), key);
         }
       },
     );
@@ -170,16 +220,17 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   Widget listItem(int index) {
     return ListTile(
         contentPadding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
-        leading: Container(
-          padding: EdgeInsets.only(right: 12.0),
-          decoration: new BoxDecoration(
-              border: new Border(
-                  right: new BorderSide(
-                      width: 1.0,
-                      color: this.darkMode ? Colors.white24 : Colors.black))),
-          child: Icon(Icons.cloud_upload,
-              color: this.darkMode ? Colors.white : Colors.black),
-        ),
+        leading: this.imageFromPreferences,
+        //     Container(
+        //   padding: EdgeInsets.only(right: 12.0),
+        //   decoration: new BoxDecoration(
+        //       border: new Border(
+        //           right: new BorderSide(
+        //               width: 1.0,
+        //               color: this.darkMode ? Colors.white24 : Colors.black))),
+        //   child: Icon(Icons.cloud_upload,
+        //       color: this.darkMode ? Colors.white : Colors.black),
+        // ),
         title: Text(
           "Undefined${index + 1}",
           style: TextStyle(
